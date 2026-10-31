@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { billingService } from "@/server/services/billing";
+import { dunningService } from "@/server/services/dunning";
 import { today } from "@/lib/dates";
 
 export async function GET(req: NextRequest) {
@@ -50,6 +51,12 @@ export async function GET(req: NextRequest) {
       maxBatches--;
     } while (totalRemaining > 0 && maxBatches > 0);
 
+    // Change 3: Run dunning reminders job after billing completes
+    const dunningResult = await dunningService.runDunningJob({
+      asOf: asOfDate,
+      actorId: null,
+    });
+
     aggregatedSummary.durationMs = Date.now() - start;
 
     return NextResponse.json({
@@ -58,6 +65,7 @@ export async function GET(req: NextRequest) {
         processed: totalProcessed,
         remaining: totalRemaining,
         summary: aggregatedSummary,
+        dunning: dunningResult,
       },
     });
   } catch (err: any) {

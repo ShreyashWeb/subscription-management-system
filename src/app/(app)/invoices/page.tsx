@@ -17,6 +17,7 @@ import {
   Plus,
 } from "lucide-react";
 import { confirmAllDraftsAction } from "@/server/actions/invoices";
+import { runDunningAction } from "@/server/actions/dunning";
 import { revalidatePath } from "next/cache";
 
 interface InvoicesPageProps {
@@ -72,7 +73,25 @@ export default async function InvoicesPage({ searchParams }: InvoicesPageProps) 
         </div>
 
         {isStaffOrAdmin && (
-          <div className="flex items-center gap-3">
+          <div className="flex flex-wrap items-center gap-3">
+            {currentStatus === "OVERDUE" && (
+              <form
+                action={async () => {
+                  "use server";
+                  await runDunningAction();
+                  revalidatePath("/invoices");
+                }}
+              >
+                <button
+                  type="submit"
+                  className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-rose-500/20 hover:bg-rose-500/30 text-rose-300 border border-rose-500/30 font-medium text-sm transition-colors"
+                >
+                  <AlertCircle className="w-4 h-4 text-rose-400" />
+                  <span>Run Dunning Reminders</span>
+                </button>
+              </form>
+            )}
+
             <form
               action={async () => {
                 "use server";
@@ -199,9 +218,11 @@ export default async function InvoicesPage({ searchParams }: InvoicesPageProps) 
               ) : (
                 items.map((inv) => {
                   const outstanding = Math.max(0, inv.total - inv.paidTotal);
+                  const diffTime = new Date().getTime() - new Date(inv.dueDate).getTime();
+                  const daysLate = Math.floor(diffTime / (1000 * 60 * 60 * 24));
                   const isOverdue =
                     inv.status === "CONFIRMED" &&
-                    new Date(inv.dueDate) < new Date() &&
+                    daysLate >= 1 &&
                     outstanding > 0;
 
                   return (
@@ -252,6 +273,11 @@ export default async function InvoicesPage({ searchParams }: InvoicesPageProps) 
                         <span className={isOverdue ? "text-rose-400 font-bold" : "text-zinc-400"}>
                           {new Date(inv.dueDate).toISOString().slice(0, 10)}
                         </span>
+                        {isOverdue && (
+                          <div className="text-[10px] text-rose-400 font-sans font-bold">
+                            {daysLate} day{daysLate === 1 ? "" : "s"} late
+                          </div>
+                        )}
                       </td>
 
                       <td className="py-3.5 px-4">

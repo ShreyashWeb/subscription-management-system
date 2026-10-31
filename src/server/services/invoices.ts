@@ -1,6 +1,7 @@
 import { db } from "@/lib/db";
 import { InvoiceStatus, Prisma } from "@prisma/client";
 import { today } from "@/lib/dates";
+import { NotFoundError, ValidationError } from "@/lib/errors";
 
 export interface ListInvoicesParams {
   status?: InvoiceStatus | "ALL" | "OVERDUE";
@@ -129,17 +130,20 @@ export const invoicesService = {
     });
 
     if (!invoice) {
-      throw new Error("Invoice not found");
+      throw new NotFoundError("Invoice not found");
     }
 
     if (invoice.status !== InvoiceStatus.DRAFT) {
-      throw new Error(`Only DRAFT invoices can be confirmed. Current status: ${invoice.status}`);
+      throw new ValidationError(`Only DRAFT invoices can be confirmed. Current status: ${invoice.status}`);
     }
+
+    // Change 2: Invoices with total = 0 immediately become PAID
+    const targetStatus = invoice.total === 0 ? InvoiceStatus.PAID : InvoiceStatus.CONFIRMED;
 
     const updated = await db.invoice.update({
       where: { id },
       data: {
-        status: InvoiceStatus.CONFIRMED,
+        status: targetStatus,
       },
     });
 
@@ -147,8 +151,11 @@ export const invoicesService = {
       data: {
         entity: "invoice",
         entityId: id,
-        action: "INVOICE_CONFIRMED",
-        detail: `Invoice ${invoice.number} confirmed`,
+        action: targetStatus === InvoiceStatus.PAID ? "INVOICE_PAID" : "INVOICE_CONFIRMED",
+        detail:
+          targetStatus === InvoiceStatus.PAID
+            ? `Invoice ${invoice.number} confirmed with zero balance and marked PAID immediately`
+            : `Invoice ${invoice.number} confirmed`,
         actorId: actorId ?? null,
       },
     });
@@ -200,17 +207,29 @@ export const invoicesService = {
   async confirmAllDrafts(actorId?: string | null) {
     const drafts = await db.invoice.findMany({
       where: { status: InvoiceStatus.DRAFT },
-      select: { id: true, number: true },
+      select: { id: true, number: true, total: true },
     });
 
     if (drafts.length === 0) {
       return { count: 0 };
     }
 
-    const updated = await db.invoice.updateMany({
-      where: { status: InvoiceStatus.DRAFT },
-      data: { status: InvoiceStatus.CONFIRMED },
-    });
+    const zeroTotalIds = drafts.filter((d) => d.total === 0).map((d) => d.id);
+    const positiveTotalIds = drafts.filter((d) => d.total > 0).map((d) => d.id);
+
+    if (zeroTotalIds.length > 0) {
+      await db.invoice.updateMany({
+        where: { id: { in: zeroTotalIds } },
+        data: { status: InvoiceStatus.PAID },
+      });
+    }
+
+    if (positiveTotalIds.length > 0) {
+      await db.invoice.updateMany({
+        where: { id: { in: positiveTotalIds } },
+        data: { status: InvoiceStatus.CONFIRMED },
+      });
+    }
 
     // Write batch activity log
     await db.activityLog.create({
@@ -218,12 +237,12 @@ export const invoicesService = {
         entity: "invoice",
         entityId: "bulk",
         action: "BULK_CONFIRMED",
-        detail: `Bulk confirmed ${updated.count} draft invoices`,
+        detail: `Bulk confirmed ${drafts.length} draft invoices (${zeroTotalIds.length} zero-total auto-paid, ${positiveTotalIds.length} confirmed)`,
         actorId: actorId ?? null,
       },
     });
 
-    return { count: updated.count };
+    return { count: drafts.length };
   },
 
   async sendInvoice(id: string, actorId?: string | null) {

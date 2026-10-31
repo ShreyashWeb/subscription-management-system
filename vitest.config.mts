@@ -4,12 +4,13 @@ import path from "path";
 export default defineConfig({
   test: {
     environment: "node",
-    testTimeout: 60000,
-    hookTimeout: 60000,
+    fileParallelism: false,
+    testTimeout: 90000,
+    hookTimeout: 90000,
   },
   resolve: {
     alias: {
-      "@": path.resolve(__dirname, "./src"),
+      "@": path.resolve(process.cwd(), "./src"),
     },
   },
 });

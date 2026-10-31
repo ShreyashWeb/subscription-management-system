@@ -226,6 +226,7 @@ export const billingService = {
             const dueDate = addDays(issueDate, sub.paymentTermsDays);
 
             const invoiceNumber = await getNextSequenceNumber(tx, "INV", issueDate);
+            const initialStatus = invoiceTotal === 0 ? "PAID" : "DRAFT";
 
             // Change 4: INSERT ... ON CONFLICT (subscriptionId, periodStart) DO NOTHING RETURNING id
             const insertedRows = await tx.$queryRawUnsafe<Array<{ id: string }>>(
@@ -236,9 +237,9 @@ export const billingService = {
                 "createdAt", "updatedAt"
               )
               VALUES (
-                gen_random_uuid()::text, $1, $2, $3, 'DRAFT',
-                $4::date, $5::date, $6::date, $7::date,
-                $8, $9, $10, $11, 0,
+                gen_random_uuid()::text, $1, $2, $3, $4::"InvoiceStatus",
+                $5::date, $6::date, $7::date, $8::date,
+                $9, $10, $11, $12, 0,
                 NOW(), NOW()
               )
               ON CONFLICT ("subscriptionId", "periodStart") DO NOTHING
@@ -246,6 +247,7 @@ export const billingService = {
               invoiceNumber,
               sub.id,
               sub.customerId,
+              initialStatus,
               issueDate,
               dueDate,
               periodStart,

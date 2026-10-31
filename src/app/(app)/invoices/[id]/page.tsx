@@ -5,6 +5,8 @@ import { notFound } from "next/navigation";
 import { formatMoney } from "@/lib/money";
 import { StatusPill } from "@/components/glass/status-pill";
 import { InvoiceActions } from "@/components/invoices/invoice-actions";
+import { DunningTimeline } from "@/components/invoices/dunning-timeline";
+import { DeletePaymentButton } from "@/components/payments/delete-payment-button";
 import Link from "next/link";
 import {
   ArrowLeft,
@@ -39,10 +41,13 @@ export default async function InvoiceDetailPage({ params }: InvoiceDetailPagePro
   }
 
   const isStaffOrAdmin = user.role === "ADMIN" || user.role === "STAFF";
+  const isAdmin = user.role === "ADMIN";
   const outstanding = Math.max(0, invoice.total - invoice.paidTotal);
+  const diffTime = new Date().getTime() - new Date(invoice.dueDate).getTime();
+  const daysLate = Math.floor(diffTime / (1000 * 60 * 60 * 24));
   const isOverdue =
     invoice.status === "CONFIRMED" &&
-    new Date(invoice.dueDate) < new Date() &&
+    daysLate >= 1 &&
     outstanding > 0;
 
   return (
@@ -76,6 +81,7 @@ export default async function InvoiceDetailPage({ params }: InvoiceDetailPagePro
             id: invoice.id,
             number: invoice.number,
             status: invoice.status,
+            total: invoice.total,
             paidTotal: invoice.paidTotal,
             sentAt: invoice.sentAt,
           }}
@@ -303,6 +309,79 @@ export default async function InvoiceDetailPage({ params }: InvoiceDetailPagePro
             </div>
           </div>
         </div>
+      </div>
+
+      {/* Dunning Reminder Stages Timeline */}
+      {(isOverdue || invoice.reminders.length > 0) && (
+        <DunningTimeline
+          invoiceId={invoice.id}
+          daysLate={daysLate}
+          isOverdue={isOverdue}
+          reminders={invoice.reminders}
+          isStaffOrAdmin={isStaffOrAdmin}
+        />
+      )}
+
+      {/* Recorded Payments Section */}
+      <div className="glass-card rounded-2xl border border-white/10 overflow-hidden shadow-xl">
+        <div className="p-4 border-b border-white/10 flex items-center justify-between">
+          <h3 className="font-bold text-white text-sm flex items-center gap-2">
+            <CreditCard className="w-4 h-4 text-emerald-400" />
+            <span>Recorded Payments History</span>
+          </h3>
+          <span className="text-xs text-zinc-500 font-mono">
+            {invoice.payments.length} payment{invoice.payments.length === 1 ? "" : "s"}
+          </span>
+        </div>
+
+        {invoice.payments.length === 0 ? (
+          <div className="p-6 text-center text-xs text-zinc-500">
+            No payments recorded against this invoice yet.
+          </div>
+        ) : (
+          <div className="overflow-x-auto">
+            <table className="w-full text-left text-sm text-zinc-300">
+              <thead className="bg-white/5 border-b border-white/10 text-xs font-semibold text-zinc-400 uppercase tracking-wider">
+                <tr>
+                  <th className="py-3 px-4">Date</th>
+                  <th className="py-3 px-4">Method</th>
+                  <th className="py-3 px-4 text-right">Amount Paid</th>
+                  <th className="py-3 px-4">Note / Reference</th>
+                  {isAdmin && <th className="py-3 px-4 text-right">Action</th>}
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-white/5 font-mono text-xs">
+                {invoice.payments.map((p) => (
+                  <tr key={p.id} className="hover:bg-white/[0.02]">
+                    <td className="py-3.5 px-4 text-zinc-300">
+                      {new Date(p.paidOn).toISOString().slice(0, 10)}
+                    </td>
+                    <td className="py-3.5 px-4 font-sans font-semibold text-white">
+                      <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] bg-emerald-500/10 text-emerald-300 border border-emerald-500/20">
+                        {p.method}
+                      </span>
+                    </td>
+                    <td className="py-3.5 px-4 text-right font-bold text-emerald-400">
+                      {formatMoney(p.amount)}
+                    </td>
+                    <td className="py-3.5 px-4 font-sans text-zinc-400">
+                      {p.note || "—"}
+                    </td>
+                    {isAdmin && (
+                      <td className="py-3.5 px-4 text-right">
+                        <DeletePaymentButton
+                          paymentId={p.id}
+                          amountFormatted={formatMoney(p.amount)}
+                          invoiceNumber={invoice.number}
+                        />
+                      </td>
+                    )}
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
       </div>
 
       {/* Activity Timeline */}

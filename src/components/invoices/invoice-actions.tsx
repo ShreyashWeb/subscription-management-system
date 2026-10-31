@@ -16,12 +16,14 @@ import {
 } from "@/server/actions/invoices";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
+import { RecordPaymentDialog } from "@/components/payments/record-payment-dialog";
 
 interface InvoiceActionsProps {
   invoice: {
     id: string;
     number: string;
     status: string;
+    total: number;
     paidTotal: number;
     sentAt: Date | string | null;
   };
@@ -34,6 +36,10 @@ export function InvoiceActions({ invoice, isStaffOrAdmin }: InvoiceActionsProps)
   const [showCancelConfirm, setShowCancelConfirm] = useState(false);
 
   const canConfirm = isStaffOrAdmin && invoice.status === "DRAFT";
+  const canRecordPayment =
+    isStaffOrAdmin &&
+    invoice.status === "CONFIRMED" &&
+    invoice.paidTotal < invoice.total;
   const canCancel =
     isStaffOrAdmin &&
     (invoice.status === "DRAFT" ||
@@ -106,6 +112,10 @@ export function InvoiceActions({ invoice, isStaffOrAdmin }: InvoiceActionsProps)
           <CheckCircle2 className="w-4 h-4" />
           <span>Confirm Invoice</span>
         </button>
+      )}
+
+      {canRecordPayment && (
+        <RecordPaymentDialog invoice={invoice} />
       )}
 
       {isStaffOrAdmin && invoice.status !== "CANCELLED" && (
