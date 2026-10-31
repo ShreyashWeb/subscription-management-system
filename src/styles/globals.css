@@ -7,7 +7,7 @@
   --glass-strong: rgba(20, 20, 32, 0.88);
   --glass-border: rgba(255, 255, 255, 0.16);
 
-  /* aurora */
+  /* aurora tokens */
   --aurora-1: #6d5dfc;   /* violet */
   --aurora-2: #22d3ee;   /* cyan */
   --aurora-3: #f472b6;   /* pink */
@@ -63,8 +63,9 @@
   --color-warn: var(--warn);
   --color-bad: var(--bad);
 
-  --font-sans: var(--font-geist-sans), "Inter", system-ui, sans-serif;
-  --font-num: var(--font-space-grotesk), "Space Grotesk", "Manrope", sans-serif;
+  --font-sans: var(--font-inter), "Inter", system-ui, sans-serif;
+  --font-heading: var(--font-sora), "Sora", sans-serif;
+  --font-num: var(--font-space-grotesk), var(--font-manrope), "Space Grotesk", "Manrope", monospace;
 }
 
 * {
@@ -99,10 +100,14 @@ html, body {
   background-attachment: fixed;
   background-repeat: no-repeat;
   color: var(--text);
-  font-family: var(--font-sans);
+  font-family: var(--font-sans), "Inter", system-ui, sans-serif;
   min-height: 100vh;
   overflow-x: hidden;
   -webkit-font-smoothing: antialiased;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-heading), "Sora", sans-serif;
 }
 
 /* Glassmorphism primitives */
@@ -166,6 +171,7 @@ html, body {
 .num {
   font-family: var(--font-num);
   font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum" 1;
 }
 
 /* Neo-brutalist accent button with high-contrast visible shadow on dark */
@@ -193,19 +199,16 @@ html, body {
   box-shadow: 3px 3px 0 var(--aurora-3);
 }
 
-/* Border beam style top glow for hero KPI cards */
-.border-beam-card {
-  position: relative;
+/* Aceternity Aurora animation */
+@keyframes aurora {
+  from {
+    background-position: 50% 50%, 50% 50%;
+  }
+  to {
+    background-position: 350% 50%, 350% 50%;
+  }
 }
 
-.border-beam-card::after {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: 15%;
-  right: 15%;
-  height: 2px;
-  background: linear-gradient(90deg, transparent, var(--aurora-2), var(--aurora-1), transparent);
-  box-shadow: 0 0 16px 2px var(--aurora-2);
-  pointer-events: none;
+.animate-aurora {
+  animation: aurora 60s linear infinite;
 }

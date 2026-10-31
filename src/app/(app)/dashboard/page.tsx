@@ -9,6 +9,7 @@ import { NumberTicker } from "@/components/glass/number-ticker";
 import { Sparkline } from "@/components/glass/sparkline";
 import { BillingPipelineChart } from "@/components/glass/billing-pipeline-chart";
 import { DiaTextReveal } from "@/registry/magicui/dia-text-reveal";
+import { BorderBeam } from "@/components/ui/border-beam";
 import {
   TrendingUp,
   CreditCard,
@@ -73,7 +74,8 @@ export default function DashboardPage() {
         </BentoItem>
 
         {/* KPI: Monthly Recurring Revenue (MRR) - Border Beam Hero Tile */}
-        <BentoItem colSpan={3} hoverLift glow>
+        <BentoItem colSpan={3} hoverLift glow className="relative">
+          <BorderBeam size={90} duration={6} colorFrom="var(--aurora-2)" colorTo="var(--aurora-1)" />
           <div className="flex items-center justify-between text-zinc-400 text-xs font-medium">
             <span>MRR</span>
             <span className="text-[10px] uppercase font-mono px-2 py-0.5 rounded-full bg-[#6d5dfc]/25 text-[#22d3ee] border border-[#6d5dfc]/40 font-semibold shadow-[0_0_10px_rgba(109,93,252,0.4)]">
