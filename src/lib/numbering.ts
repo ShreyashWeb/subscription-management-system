@@ -30,6 +30,7 @@ export async function getNextSequenceNumber(
   }
 
   const seq = rows[0].value;
-  return `${prefix}-${year}-${String(seq).padStart(5, "0")}`;
+  const padLen = prefix === "INV" ? 6 : 5;
+  return `${prefix}-${year}-${String(seq).padStart(padLen, "0")}`;
 }
 
