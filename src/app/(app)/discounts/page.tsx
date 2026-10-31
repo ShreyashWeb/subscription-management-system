@@ -9,7 +9,8 @@ import { deactivateDiscountAction } from "@/server/actions/discounts";
 import { today } from "@/lib/dates";
 
 export default async function DiscountsPage() {
-  await requireRole(["ADMIN"]);
+  const user = await requireRole(["ADMIN", "STAFF"]);
+  const isAdmin = user.role === "ADMIN";
 
   const [discounts, products, subscriptions] = await Promise.all([
     discountsService.listDiscounts(),
@@ -45,14 +46,16 @@ export default async function DiscountsPage() {
           </p>
         </div>
 
-        <DiscountDialog
-          products={products}
-          subscriptions={subscriptions.map((s) => ({
-            id: s.id,
-            number: s.number,
-            customerName: s.customer.name,
-          }))}
-        />
+        {isAdmin && (
+          <DiscountDialog
+            products={products}
+            subscriptions={subscriptions.map((s) => ({
+              id: s.id,
+              number: s.number,
+              customerName: s.customer.name,
+            }))}
+          />
+        )}
       </div>
 
       {/* Discounts Table */}
@@ -169,34 +172,40 @@ export default async function DiscountsPage() {
                       </td>
                       <td className="py-3.5 px-4">{statusBadge}</td>
                       <td className="py-3.5 px-4 text-right">
-                        <div className="flex items-center justify-end gap-1">
-                          <DiscountDialog
-                            discount={discount as any}
-                            products={products}
-                            subscriptions={subscriptions.map((s) => ({
-                              id: s.id,
-                              number: s.number,
-                              customerName: s.customer.name,
-                            }))}
-                          />
+                        {isAdmin ? (
+                          <div className="flex items-center justify-end gap-1">
+                            <DiscountDialog
+                              discount={discount as any}
+                              products={products}
+                              subscriptions={subscriptions.map((s) => ({
+                                id: s.id,
+                                number: s.number,
+                                customerName: s.customer.name,
+                              }))}
+                            />
 
-                          {discount.active && (
-                            <form
-                              action={async () => {
-                                "use server";
-                                await deactivateDiscountAction(discount.id);
-                              }}
-                            >
-                              <button
-                                type="submit"
-                                title="Deactivate discount"
-                                className="p-1.5 text-zinc-400 hover:text-rose-400 hover:bg-rose-500/10 rounded-lg transition-colors"
+                            {discount.active && (
+                              <form
+                                action={async () => {
+                                  "use server";
+                                  await deactivateDiscountAction(discount.id);
+                                }}
                               >
-                                <PowerOff className="w-4 h-4" />
-                              </button>
-                            </form>
-                          )}
-                        </div>
+                                <button
+                                  type="submit"
+                                  title="Deactivate discount"
+                                  className="p-1.5 text-zinc-400 hover:text-rose-400 hover:bg-rose-500/10 rounded-lg transition-colors cursor-pointer"
+                                >
+                                  <PowerOff className="w-4 h-4" />
+                                </button>
+                              </form>
+                            )}
+                          </div>
+                        ) : (
+                          <span className="text-[11px] text-zinc-500 font-mono">
+                            Admin only
+                          </span>
+                        )}
                       </td>
                     </tr>
                   );
