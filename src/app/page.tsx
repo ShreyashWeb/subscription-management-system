@@ -8,6 +8,7 @@ import { StatusPill } from "@/components/glass/status-pill";
 import { Money } from "@/components/glass/money";
 import { NumberTicker } from "@/components/glass/number-ticker";
 import { Sparkline } from "@/components/glass/sparkline";
+import { DiaTextReveal } from "@/registry/magicui/dia-text-reveal";
 import {
   Zap,
   ArrowRight,
@@ -28,11 +29,18 @@ export default function HomePage() {
           <span>Phase 0: Aurora Glass Design System</span>
         </div>
 
-        <h1 className="text-4xl md:text-6xl font-extrabold tracking-tight text-center text-white max-w-3xl leading-[1.15]">
-          Billing that runs itself on{" "}
-          <span className="bg-gradient-to-r from-[#6d5dfc] via-[#22d3ee] to-[#f472b6] bg-clip-text text-transparent drop-shadow-[0_0_30px_rgba(109,93,252,0.4)]">
-            Aurora Glass
-          </span>
+        <h1 className="text-4xl md:text-6xl font-extrabold tracking-tight text-center text-white max-w-4xl leading-[1.2]">
+          Billing that runs itself to{" "}
+          <DiaTextReveal
+            repeat
+            repeatDelay={1.4}
+            text={[
+              "eliminate missed renewals",
+              "prevent double billing",
+              "automate subscription invoices",
+              "maximize recurring cashflow",
+            ]}
+          />
         </h1>
 
         <p className="text-base md:text-lg text-zinc-300 text-center max-w-2xl mt-4 drop-shadow-sm">

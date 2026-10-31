@@ -8,6 +8,7 @@ import { Money } from "@/components/glass/money";
 import { NumberTicker } from "@/components/glass/number-ticker";
 import { Sparkline } from "@/components/glass/sparkline";
 import { BillingPipelineChart } from "@/components/glass/billing-pipeline-chart";
+import { DiaTextReveal } from "@/registry/magicui/dia-text-reveal";
 import {
   TrendingUp,
   CreditCard,
@@ -155,8 +156,19 @@ export default function DashboardPage() {
               <h3 className="text-lg font-semibold text-white">
                 Automated Subscription Lifecycle & Billing Run
               </h3>
-              <p className="text-xs text-zinc-400 mt-0.5">
-                Idempotent period billing with automatic tax and discount resolution
+              <p className="text-xs text-zinc-400 mt-0.5 flex flex-wrap items-center gap-1.5">
+                <span>Idempotent period billing engine to</span>
+                <DiaTextReveal
+                  repeat
+                  repeatDelay={1.6}
+                  className="font-medium text-xs"
+                  text={[
+                    "catch up missed periods",
+                    "resolve active discounts",
+                    "guarantee zero double billing",
+                    "calculate per-line taxes",
+                  ]}
+                />
               </p>
             </div>
             <StatusPill status="ACTIVE" label="Engine Ready" />
