@@ -72,7 +72,7 @@ export const GlassCard = React.forwardRef<HTMLDivElement, GlassCardProps>(
         className={cn(
           strong ? "glass-strong" : "glass",
           hoverLift && "glass-interactive cursor-pointer group",
-          glow && "border-beam-card",
+          glow && "shadow-[0_0_30px_-5px_rgba(109,93,252,0.35)] border-[#6d5dfc]/40",
           "p-6 relative overflow-hidden",
           className
         )}

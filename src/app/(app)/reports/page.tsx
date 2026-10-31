@@ -6,7 +6,6 @@ import { MrrMovementChart } from "@/components/reports/mrr-movement-chart";
 import { BentoGrid, BentoItem } from "@/components/glass/bento-grid";
 import { Money } from "@/components/glass/money";
 import { NumberTicker } from "@/components/glass/number-ticker";
-import { BorderBeam } from "@/components/ui/border-beam";
 import { formatMoney } from "@/lib/money";
 import {
   TrendingUp,
@@ -77,8 +76,7 @@ export default async function ReportsPage() {
       {/* Bento Grid KPI Row */}
       <BentoGrid>
         {/* KPI: Monthly Recurring Revenue (MRR) */}
-        <BentoItem colSpan={3} hoverLift glow className="relative">
-          <BorderBeam size={80} duration={6} colorFrom="var(--aurora-2)" colorTo="var(--aurora-1)" />
+        <BentoItem colSpan={3} hoverLift>
           <div className="flex items-center justify-between text-zinc-400 text-xs font-medium">
             <span>MONTHLY RECURRING REVENUE (MRR)</span>
             <RefreshCw className="w-4 h-4 text-[#22d3ee]" />
