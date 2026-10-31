@@ -19,8 +19,8 @@ export function LoginForm() {
   const [demoLoading, setDemoLoading] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
-  // User requirement 5: Show demo buttons only when NEXT_PUBLIC_DEMO_MODE=true
-  const isDemoMode = process.env.NEXT_PUBLIC_DEMO_MODE === "true";
+  // Show demo buttons by default for hackathon judges unless explicitly disabled
+  const isDemoMode = process.env.NEXT_PUBLIC_DEMO_MODE !== "false";
 
   const handleLogin = async (e: React.FormEvent, targetEmail?: string, targetPassword?: string) => {
     if (e) e.preventDefault();

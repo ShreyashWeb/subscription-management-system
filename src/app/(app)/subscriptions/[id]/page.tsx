@@ -1,5 +1,6 @@
 import React from "react";
 import { auth } from "@/lib/auth";
+import { db } from "@/lib/db";
 import { getSubscription } from "@/server/services/subscriptions";
 import { GlassCard } from "@/components/glass/glass-card";
 import { StatusPill } from "@/components/glass/status-pill";
@@ -37,9 +38,13 @@ export default async function SubscriptionDetailPage({
 
   const { id } = await params;
 
-  let subscription;
+  let subscription: any;
+  let availablePlans: any[] = [];
   try {
-    subscription = await getSubscription(id);
+    [subscription, availablePlans] = await Promise.all([
+      getSubscription(id),
+      db.plan.findMany({ where: { active: true }, orderBy: { price: "asc" } }),
+    ]);
   } catch {
     notFound();
   }
@@ -99,6 +104,7 @@ export default async function SubscriptionDetailPage({
           <SubscriptionActions
             subscription={subscription as any}
             isAdminOrStaff={isAdminOrStaff}
+            availablePlans={availablePlans}
           />
         </div>
       </div>
@@ -131,7 +137,7 @@ export default async function SubscriptionDetailPage({
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-white/5">
-                  {lines.map((l) => (
+                  {lines.map((l: any) => (
                     <tr key={l.id} className="hover:bg-white/[0.02] transition-colors">
                       <td className="py-4 px-6">
                         <div className="font-semibold text-white">{l.product.name}</div>
@@ -207,7 +213,7 @@ export default async function SubscriptionDetailPage({
               <p className="text-xs text-zinc-500">No activity logged yet.</p>
             ) : (
               <div className="space-y-4">
-                {activities.map((act) => (
+                {activities.map((act: any) => (
                   <div key={act.id} className="flex items-start gap-3 text-xs">
                     <span className="w-2 h-2 rounded-full bg-[#6d5dfc] mt-1.5 shrink-0" />
                     <div className="flex-1">

@@ -55,6 +55,7 @@ describe("Phase 5: Payments, Outstanding & Overdue Reminders", () => {
   });
 
   afterAll(async () => {
+    if (!testCustomer?.id) return;
     // Cleanup payments, reminders, invoices, subscriptions created in this test
     const invoices = await db.invoice.findMany({
       where: { customerId: testCustomer.id },

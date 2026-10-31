@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Inter, Sora, Space_Grotesk, Manrope } from "next/font/google";
 import "@/styles/globals.css";
 import { Toaster } from "sonner";
+import { CommandPalette } from "@/components/layout/command-palette";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -43,6 +44,7 @@ export default function RootLayout({
     >
       <body className="min-h-screen text-[#f5f5fa] font-sans selection:bg-[#6d5dfc]/30 selection:text-white">
         {children}
+        <CommandPalette />
         <Toaster position="bottom-right" theme="dark" richColors />
       </body>
     </html>
