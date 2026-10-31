@@ -344,3 +344,4 @@ export default async function InvoiceDetailPage({ params }: InvoiceDetailPagePro
     </div>
   );
 }
+

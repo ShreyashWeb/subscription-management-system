@@ -1,7 +1,7 @@
 import React from "react";
 import { requireRole } from "@/server/policies/permissions";
 import { discountsService } from "@/server/services/discounts";
-import { prisma } from "@/lib/db";
+import { db } from "@/lib/db";
 import { DiscountDialog } from "@/components/discounts/discount-dialog";
 import { formatMoney } from "@/lib/money";
 import { Tag, CheckCircle2, AlertTriangle, XCircle, PowerOff } from "lucide-react";
@@ -13,12 +13,12 @@ export default async function DiscountsPage() {
 
   const [discounts, products, subscriptions] = await Promise.all([
     discountsService.listDiscounts(),
-    prisma.product.findMany({
+    db.product.findMany({
       where: { active: true },
       select: { id: true, name: true },
       orderBy: { name: "asc" },
     }),
-    prisma.subscription.findMany({
+    db.subscription.findMany({
       select: {
         id: true,
         number: true,
@@ -209,3 +209,4 @@ export default async function DiscountsPage() {
     </div>
   );
 }
+

@@ -318,3 +318,4 @@ export async function generateInvoicePdfBuffer(invoice: InvoicePdfData): Promise
   const doc = <InvoicePdfDocument invoice={invoice} />;
   return renderToBuffer(doc);
 }
+

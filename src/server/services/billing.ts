@@ -1,4 +1,4 @@
-import { prisma } from "@/lib/db";
+import { db } from "@/lib/db";
 import { addPeriod } from "@/lib/period";
 import { addDays } from "date-fns";
 import { getNextSequenceNumber } from "@/lib/numbering";
@@ -54,7 +54,7 @@ export const billingService = {
 
     // Step 1: Activate CONFIRMED subscriptions whose startDate <= asOf
     let activatedCount = 0;
-    const dueConfirmed = await prisma.subscription.findMany({
+    const dueConfirmed = await db.subscription.findMany({
       where: {
         status: "CONFIRMED",
         startDate: { lte: asOfDate },
@@ -69,7 +69,7 @@ export const billingService = {
       const trialDays = sub.plan?.trialDays ?? 0;
       const nextInvoiceDate = addDays(sub.startDate, trialDays);
 
-      const updated = await prisma.subscription.updateMany({
+      const updated = await db.subscription.updateMany({
         where: { id: sub.id, status: "CONFIRMED" },
         data: {
           status: "ACTIVE",
@@ -79,7 +79,7 @@ export const billingService = {
 
       if (updated.count > 0) {
         activatedCount++;
-        await prisma.activityLog.create({
+        await db.activityLog.create({
           data: {
             entity: "subscription",
             entityId: sub.id,
@@ -92,7 +92,7 @@ export const billingService = {
     }
 
     // Step 2: Query candidate ACTIVE subscriptions for this batch
-    const candidates = await prisma.subscription.findMany({
+    const candidates = await db.subscription.findMany({
       where: {
         status: "ACTIVE",
         nextInvoiceDate: { lte: asOfDate },
@@ -112,7 +112,7 @@ export const billingService = {
     // Step 3: Process each candidate in its own isolated transaction
     for (const candidate of candidates) {
       try {
-        await prisma.$transaction(
+        await db.$transaction(
           async (tx) => {
             // Re-check status = ACTIVE and nextInvoiceDate <= asOf with row lock
             const lockedRows = await tx.$queryRawUnsafe<Array<{
@@ -355,7 +355,7 @@ export const billingService = {
     }
 
     // Step 4: Count remaining ACTIVE subscriptions due as of asOfDate
-    const remainingCount = await prisma.subscription.count({
+    const remainingCount = await db.subscription.count({
       where: {
         status: "ACTIVE",
         nextInvoiceDate: { lte: asOfDate },

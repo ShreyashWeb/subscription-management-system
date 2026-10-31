@@ -1,6 +1,6 @@
 import React from "react";
 import { requireRole } from "@/server/policies/permissions";
-import { prisma } from "@/lib/db";
+import { db } from "@/lib/db";
 import { BillingRunner } from "@/components/billing/billing-runner";
 import { today } from "@/lib/dates";
 
@@ -8,7 +8,7 @@ export default async function BillingRunPage() {
   await requireRole(["ADMIN", "STAFF"]);
 
   const now = today();
-  const initialDueCount = await prisma.subscription.count({
+  const initialDueCount = await db.subscription.count({
     where: {
       status: "ACTIVE",
       nextInvoiceDate: { lte: now },
@@ -30,3 +30,4 @@ export default async function BillingRunPage() {
     </div>
   );
 }
+

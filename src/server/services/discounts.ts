@@ -1,4 +1,4 @@
-import { prisma } from "@/lib/db";
+import { db } from "@/lib/db";
 import { DiscountInput } from "@/lib/validators/discount";
 import { Prisma } from "@prisma/client";
 import { allocateLargestRemainder } from "@/lib/billing-math";
@@ -12,7 +12,7 @@ export interface LineDiscountResult {
 
 export const discountsService = {
   async listDiscounts() {
-    return prisma.discount.findMany({
+    return db.discount.findMany({
       include: {
         targets: true,
       },
@@ -21,7 +21,7 @@ export const discountsService = {
   },
 
   async getDiscount(id: string) {
-    return prisma.discount.findUnique({
+    return db.discount.findUnique({
       where: { id },
       include: {
         targets: true,
@@ -30,7 +30,7 @@ export const discountsService = {
   },
 
   async createDiscount(input: DiscountInput) {
-    return prisma.$transaction(async (tx) => {
+    return db.$transaction(async (tx) => {
       const discount = await tx.discount.create({
         data: {
           name: input.name,
@@ -67,7 +67,7 @@ export const discountsService = {
   },
 
   async updateDiscount(id: string, input: DiscountInput) {
-    return prisma.$transaction(async (tx) => {
+    return db.$transaction(async (tx) => {
       const discount = await tx.discount.update({
         where: { id },
         data: {
@@ -108,7 +108,7 @@ export const discountsService = {
   },
 
   async deactivateDiscount(id: string) {
-    return prisma.discount.update({
+    return db.discount.update({
       where: { id },
       data: { active: false },
     });

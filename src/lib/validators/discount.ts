@@ -38,3 +38,4 @@ export const discountSchema = z.object({
 );
 
 export type DiscountInput = z.infer<typeof discountSchema>;
+

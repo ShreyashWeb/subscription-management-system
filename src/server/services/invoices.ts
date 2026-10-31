@@ -1,4 +1,4 @@
-import { prisma } from "@/lib/db";
+import { db } from "@/lib/db";
 import { InvoiceStatus, Prisma } from "@prisma/client";
 import { today } from "@/lib/dates";
 
@@ -28,7 +28,7 @@ export const invoicesService = {
       if (params.status === "OVERDUE") {
         where.status = InvoiceStatus.CONFIRMED;
         where.dueDate = { lt: today() };
-        where.paidTotal = { lt: prisma.invoice.fields.total };
+        where.paidTotal = { lt: db.invoice.fields.total };
       } else {
         where.status = params.status;
       }
@@ -50,7 +50,7 @@ export const invoicesService = {
     }
 
     const [items, total, aggregates] = await Promise.all([
-      prisma.invoice.findMany({
+      db.invoice.findMany({
         where,
         include: {
           customer: { select: { id: true, name: true, email: true, company: true } },
@@ -60,8 +60,8 @@ export const invoicesService = {
         skip,
         take: pageSize,
       }),
-      prisma.invoice.count({ where }),
-      prisma.invoice.aggregate({
+      db.invoice.count({ where }),
+      db.invoice.aggregate({
         where,
         _sum: {
           total: true,
@@ -86,7 +86,7 @@ export const invoicesService = {
   },
 
   async getInvoice(id: string) {
-    const invoice = await prisma.invoice.findUnique({
+    const invoice = await db.invoice.findUnique({
       where: { id },
       include: {
         customer: true,
@@ -111,7 +111,7 @@ export const invoicesService = {
     if (!invoice) return null;
 
     // Fetch activity log for this invoice
-    const activities = await prisma.activityLog.findMany({
+    const activities = await db.activityLog.findMany({
       where: { entity: "invoice", entityId: id },
       include: { actor: { select: { name: true, role: true } } },
       orderBy: { at: "desc" },
@@ -124,7 +124,7 @@ export const invoicesService = {
   },
 
   async confirmInvoice(id: string, actorId?: string | null) {
-    const invoice = await prisma.invoice.findUnique({
+    const invoice = await db.invoice.findUnique({
       where: { id },
     });
 
@@ -136,14 +136,14 @@ export const invoicesService = {
       throw new Error(`Only DRAFT invoices can be confirmed. Current status: ${invoice.status}`);
     }
 
-    const updated = await prisma.invoice.update({
+    const updated = await db.invoice.update({
       where: { id },
       data: {
         status: InvoiceStatus.CONFIRMED,
       },
     });
 
-    await prisma.activityLog.create({
+    await db.activityLog.create({
       data: {
         entity: "invoice",
         entityId: id,
@@ -157,7 +157,7 @@ export const invoicesService = {
   },
 
   async cancelInvoice(id: string, actorId?: string | null) {
-    const invoice = await prisma.invoice.findUnique({
+    const invoice = await db.invoice.findUnique({
       where: { id },
     });
 
@@ -177,14 +177,14 @@ export const invoicesService = {
       throw new Error(`Cannot cancel invoice with recorded payments (${invoice.paidTotal} paid).`);
     }
 
-    const updated = await prisma.invoice.update({
+    const updated = await db.invoice.update({
       where: { id },
       data: {
         status: InvoiceStatus.CANCELLED,
       },
     });
 
-    await prisma.activityLog.create({
+    await db.activityLog.create({
       data: {
         entity: "invoice",
         entityId: id,
@@ -198,7 +198,7 @@ export const invoicesService = {
   },
 
   async confirmAllDrafts(actorId?: string | null) {
-    const drafts = await prisma.invoice.findMany({
+    const drafts = await db.invoice.findMany({
       where: { status: InvoiceStatus.DRAFT },
       select: { id: true, number: true },
     });
@@ -207,13 +207,13 @@ export const invoicesService = {
       return { count: 0 };
     }
 
-    const updated = await prisma.invoice.updateMany({
+    const updated = await db.invoice.updateMany({
       where: { status: InvoiceStatus.DRAFT },
       data: { status: InvoiceStatus.CONFIRMED },
     });
 
     // Write batch activity log
-    await prisma.activityLog.create({
+    await db.activityLog.create({
       data: {
         entity: "invoice",
         entityId: "bulk",
@@ -227,7 +227,7 @@ export const invoicesService = {
   },
 
   async sendInvoice(id: string, actorId?: string | null) {
-    const invoice = await prisma.invoice.findUnique({
+    const invoice = await db.invoice.findUnique({
       where: { id },
       include: {
         customer: true,
@@ -238,12 +238,12 @@ export const invoicesService = {
       throw new Error("Invoice not found");
     }
 
-    const updated = await prisma.invoice.update({
+    const updated = await db.invoice.update({
       where: { id },
       data: { sentAt: new Date() },
     });
 
-    await prisma.activityLog.create({
+    await db.activityLog.create({
       data: {
         entity: "invoice",
         entityId: id,
@@ -256,3 +256,4 @@ export const invoicesService = {
     return updated;
   },
 };
+

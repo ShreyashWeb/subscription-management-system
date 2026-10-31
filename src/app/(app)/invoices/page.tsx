@@ -334,3 +334,4 @@ export default async function InvoicesPage({ searchParams }: InvoicesPageProps) 
     </div>
   );
 }
+

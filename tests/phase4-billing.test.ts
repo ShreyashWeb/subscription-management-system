@@ -1,5 +1,6 @@
 import { describe, it, expect, beforeAll, afterAll } from "vitest";
-import { prisma } from "@/lib/db";
+import { db } from "@/lib/db";
+const prisma = db;
 import { billingService } from "@/server/services/billing";
 import { invoicesService } from "@/server/services/invoices";
 import { generateInvoicePdfBuffer } from "@/server/services/invoice-pdf";

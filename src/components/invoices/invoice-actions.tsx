@@ -160,3 +160,4 @@ export function InvoiceActions({ invoice, isStaffOrAdmin }: InvoiceActionsProps)
     </div>
   );
 }
+

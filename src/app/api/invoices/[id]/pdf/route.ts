@@ -38,3 +38,4 @@ export async function GET(
     return new Response(`PDF Generation Error: ${err.message}`, { status: 500 });
   }
 }
+
