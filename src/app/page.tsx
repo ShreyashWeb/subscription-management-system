@@ -24,13 +24,38 @@ export default function HomePage() {
   return (
     <AuroraBackground>
       <div className="w-full max-w-6xl mx-auto px-4 py-8 flex flex-col items-center">
+        {/* Navigation Bar */}
+        <header className="glass w-full mb-6 px-6 py-3 rounded-2xl border border-white/10 flex items-center justify-between">
+          <Link href="/" className="flex items-center gap-2.5">
+            <span className="w-8 h-8 rounded-xl bg-gradient-to-tr from-[#6d5dfc] to-[#22d3ee] flex items-center justify-center text-white font-bold text-sm shadow-md shadow-[#6d5dfc]/30">
+              B
+            </span>
+            <span className="font-heading font-bold text-white text-base">Brightloop Billing</span>
+          </Link>
+
+          <div className="flex items-center gap-3">
+            <Link
+              href="/login"
+              className="px-4 py-2 rounded-xl text-xs text-zinc-300 hover:text-white hover:bg-white/5 transition-colors font-medium"
+            >
+              Sign In
+            </Link>
+            <Link
+              href="/signup"
+              className="btn-brutal px-4 py-1.5 text-xs"
+            >
+              Get Started
+            </Link>
+          </div>
+        </header>
+
         {/* Aceternity Aurora Landing Hero Section */}
         <AceternityAurora className="w-full py-8 mb-4 rounded-[28px] overflow-hidden border border-white/10 shadow-[0_12px_45px_rgba(0,0,0,0.4)]">
           <div className="flex flex-col items-center text-center px-4">
             {/* Top Tag & Header */}
             <div className="flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/5 border border-white/10 text-xs text-zinc-300 mb-6 backdrop-blur-md shadow-[0_0_15px_rgba(109,93,252,0.25)]">
               <Sparkles className="w-3.5 h-3.5 text-[#22d3ee] animate-pulse" />
-              <span>Phase 0: Aurora Glass Design System</span>
+              <span>Phase 1: Authentication & Roles Online</span>
             </div>
 
             <h1 className="text-4xl md:text-6xl font-extrabold tracking-tight text-center text-white max-w-4xl leading-[1.2]">
@@ -54,16 +79,16 @@ export default function HomePage() {
 
             {/* Action Buttons */}
             <div className="flex flex-wrap items-center justify-center gap-4 mt-8">
-              <Link href="/dashboard" className="btn-brutal px-6 py-3 text-base">
+              <Link href="/login" className="btn-brutal px-6 py-3 text-base">
                 <Zap className="w-4 h-4 mr-2 fill-black" />
-                Enter Dashboard Shell
+                Sign In / Demo Logins
               </Link>
 
               <Link
                 href="/dashboard"
                 className="px-6 py-3 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 hover:border-white/20 text-white font-medium text-sm transition-all flex items-center gap-2 backdrop-blur-md shadow-[0_4px_20px_rgba(0,0,0,0.3)]"
               >
-                Explore App Shell <ArrowRight className="w-4 h-4" />
+                Dashboard <ArrowRight className="w-4 h-4" />
               </Link>
             </div>
           </div>
