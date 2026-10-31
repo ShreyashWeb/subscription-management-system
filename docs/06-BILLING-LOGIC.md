@@ -254,3 +254,4 @@ Append a line whenever you choose between valid options. Start with these defaul
 | D6 | Overpayment | Rejected |
 | D7 | Currency | Single currency from `DEFAULT_CURRENCY` |
 | D8 | Renewal | Extends expiry by one plan term |
+| D9 | Pricing calculation | Recurring total = sum of lines (quantity x unit price). Line unit price defaults to product salesPrice + variant extraPrice. Plan price is shown as list price and is not billed separately. |
