@@ -1,4 +1,4 @@
-﻿-- CreateEnum
+-- CreateEnum
 CREATE TYPE "Role" AS ENUM ('ADMIN', 'STAFF', 'CUSTOMER');
 
 -- CreateEnum
@@ -420,4 +420,3 @@ ALTER TABLE "DunningReminder" ADD CONSTRAINT "DunningReminder_invoiceId_fkey" FO
 
 -- AddForeignKey
 ALTER TABLE "ActivityLog" ADD CONSTRAINT "ActivityLog_actorId_fkey" FOREIGN KEY ("actorId") REFERENCES "User"("id") ON DELETE SET NULL ON UPDATE CASCADE;
-
