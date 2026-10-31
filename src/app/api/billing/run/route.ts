@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { billingService } from "@/server/services/billing";
+import { revalidateTag } from "next/cache";
 
 export async function POST(req: NextRequest) {
   const session = await auth();
@@ -19,6 +20,9 @@ export async function POST(req: NextRequest) {
       batchSize: body.batchSize ?? 100,
       actorId: session.user.id,
     });
+
+    revalidateTag("dashboard", "default");
+    revalidateTag("reports", "default");
 
     return NextResponse.json({ ok: true, data: result });
   } catch (err: any) {

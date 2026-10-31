@@ -62,6 +62,12 @@ DEFAULT_CURRENCY="INR"                   # change if you prefer USD
 
 Next.js (App Router) + TypeScript, Tailwind CSS, shadcn/ui, Motion, shadcn Charts (Recharts), TanStack Table, PostgreSQL, Prisma, Auth.js, Zod, Resend, `@react-pdf/renderer`. Details in `docs/02-ARCHITECTURE.md`.
 
+## Health Check & Uptime Monitoring
+
+- **Endpoint:** `GET /api/health`
+- **Behavior:** Executes a lightweight `SELECT 1` query to verify PostgreSQL connectivity and returns `{ status: "ok", database: "connected", timestamp: "..." }`.
+- **Judging Note:** Neon and Supabase free tiers pause idle databases after inactivity. Configure an external uptime monitor (e.g. BetterStack, UptimeRobot, or Cron-Job.org) to ping `/api/health` every 5 minutes during judging to keep the database warm and responsive.
+
 ## Roles
 
 | Role | Can do |

@@ -2,7 +2,7 @@
 
 import { requireRole, requireUser } from "@/server/policies/permissions";
 import { paymentsService, RecordPaymentInput, ListPaymentsParams } from "@/server/services/payments";
-import { revalidatePath } from "next/cache";
+import { revalidatePath, revalidateTag } from "next/cache";
 
 export async function recordPaymentAction(input: RecordPaymentInput) {
   const user = await requireRole(["ADMIN", "STAFF"]);
@@ -11,6 +11,10 @@ export async function recordPaymentAction(input: RecordPaymentInput) {
     revalidatePath("/payments");
     revalidatePath("/invoices");
     revalidatePath(`/invoices/${input.invoiceId}`);
+    revalidatePath("/dashboard");
+    revalidatePath("/reports");
+    revalidateTag("dashboard", "default");
+    revalidateTag("reports", "default");
     return { ok: true as const, data: result };
   } catch (err: any) {
     return {
@@ -30,6 +34,10 @@ export async function deletePaymentAction(paymentId: string) {
     revalidatePath("/payments");
     revalidatePath("/invoices");
     revalidatePath(`/invoices/${result.invoiceId}`);
+    revalidatePath("/dashboard");
+    revalidatePath("/reports");
+    revalidateTag("dashboard", "default");
+    revalidateTag("reports", "default");
     return { ok: true as const, data: result };
   } catch (err: any) {
     return {

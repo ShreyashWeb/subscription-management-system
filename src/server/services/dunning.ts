@@ -5,6 +5,8 @@ import { today } from "@/lib/dates";
 export interface RunDunningOptions {
   asOf?: Date | string;
   actorId?: string | null;
+  invoiceId?: string;
+  customerId?: string;
 }
 
 export interface DunningJobResult {
@@ -28,11 +30,13 @@ export const dunningService = {
       : today();
     const actorId = options.actorId ?? null;
 
-    // Find all confirmed invoices past due date
+    // Find confirmed invoices past due date (optionally filtered by invoiceId or customerId)
     const overdueCandidates = await db.invoice.findMany({
       where: {
         status: "CONFIRMED",
         dueDate: { lt: asOfDate },
+        ...(options.invoiceId ? { id: options.invoiceId } : {}),
+        ...(options.customerId ? { customerId: options.customerId } : {}),
       },
       include: {
         customer: true,

@@ -20,6 +20,8 @@ export const proxy = auth((req) => {
   const isPortalRoute = pathname.startsWith("/portal");
   const isAppRoute =
     pathname.startsWith("/dashboard") ||
+    pathname.startsWith("/reports") ||
+    pathname.startsWith("/payments") ||
     pathname.startsWith("/staff") ||
     pathname.startsWith("/billing-run") ||
     pathname.startsWith("/products") ||

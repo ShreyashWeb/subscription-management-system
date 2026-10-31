@@ -373,8 +373,8 @@ describe("Phase 5: Payments, Outstanding & Overdue Reminders", () => {
       dueDate: subDays(now, 10),
     });
 
-    // First dunning run
-    const result1 = await dunningService.runDunningJob({ asOf: now });
+    // First dunning run (isolated to test invoice)
+    const result1 = await dunningService.runDunningJob({ invoiceId: overdueInvoice.id, asOf: now });
 
     // Verify reminders in database for this invoice
     const reminders = await db.dunningReminder.findMany({
@@ -387,10 +387,10 @@ describe("Phase 5: Payments, Outstanding & Overdue Reminders", () => {
     expect(reminders.map((r) => r.stage)).toEqual([1, 3, 7]);
 
     // Exactly 1 email sent for the highest due stage (Stage 7)
-    expect(result1.emailsSent).toBeGreaterThanOrEqual(1);
+    expect(result1.emailsSent).toBe(1);
 
     // Second run: completely idempotent! 0 new rows inserted, 0 emails sent for this invoice
-    const result2 = await dunningService.runDunningJob({ asOf: now });
+    const result2 = await dunningService.runDunningJob({ invoiceId: overdueInvoice.id, asOf: now });
 
     const remindersAfter = await db.dunningReminder.findMany({
       where: { invoiceId: overdueInvoice.id },
