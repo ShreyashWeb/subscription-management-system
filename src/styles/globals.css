@@ -3,9 +3,9 @@
 :root {
   /* surfaces */
   --bg: #07070d;
-  --glass: rgba(255, 255, 255, 0.06);
-  --glass-strong: rgba(255, 255, 255, 0.10);
-  --glass-border: rgba(255, 255, 255, 0.14);
+  --glass: rgba(255, 255, 255, 0.08);
+  --glass-strong: rgba(20, 20, 32, 0.88);
+  --glass-border: rgba(255, 255, 255, 0.16);
 
   /* aurora */
   --aurora-1: #6d5dfc;   /* violet */
@@ -30,7 +30,7 @@
   --accent: linear-gradient(135deg, var(--aurora-1), var(--aurora-2));
 
   /* shadcn compat variables mapped to dark fintech theme */
-  --background: #07070d;
+  --background: transparent;
   --foreground: #f5f5fa;
   --card: rgba(255, 255, 255, 0.06);
   --card-foreground: #f5f5fa;
@@ -44,8 +44,8 @@
   --accent-foreground: #ffffff;
   --destructive: #fb7185;
   --destructive-foreground: #ffffff;
-  --border: rgba(255, 255, 255, 0.14);
-  --input: rgba(255, 255, 255, 0.14);
+  --border: rgba(255, 255, 255, 0.16);
+  --input: rgba(255, 255, 255, 0.16);
   --ring: #6d5dfc;
 }
 
@@ -69,10 +69,35 @@
 
 * {
   border-color: var(--glass-border);
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.18) transparent;
 }
 
-body {
-  background: var(--bg);
+/* Custom dark slim scrollbars */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.18);
+  border-radius: 9999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.32);
+}
+
+/* Static multi-radial gradient ensures color is visible even if motion layer fails */
+html, body {
+  background-color: #07070d;
+  background-image:
+    radial-gradient(1200px 700px at 10% -10%, rgba(109, 93, 252, 0.40), transparent 60%),
+    radial-gradient(900px 600px at 95% 0%, rgba(34, 211, 238, 0.28), transparent 60%),
+    radial-gradient(1000px 700px at 50% 115%, rgba(244, 114, 182, 0.26), transparent 60%);
+  background-attachment: fixed;
+  background-repeat: no-repeat;
   color: var(--text);
   font-family: var(--font-sans);
   min-height: 100vh;
@@ -82,21 +107,60 @@ body {
 
 /* Glassmorphism primitives */
 .glass {
-  background: var(--glass);
-  border: 1px solid var(--glass-border);
-  backdrop-filter: blur(18px) saturate(140%);
-  -webkit-backdrop-filter: blur(18px) saturate(140%);
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.10) 0%, rgba(255, 255, 255, 0.03) 100%);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  backdrop-filter: blur(20px) saturate(160%);
+  -webkit-backdrop-filter: blur(20px) saturate(160%);
   border-radius: var(--radius);
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.12);
+  position: relative;
+}
+
+/* Subtle gradient border highlight on the top-left edge */
+.glass::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 1px;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.35) 0%, rgba(255, 255, 255, 0.05) 30%, transparent 60%);
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
+}
+
+.glass-interactive {
+  transition: transform 200ms ease, border-color 200ms ease, box-shadow 200ms ease;
+}
+
+.glass-interactive:hover {
+  transform: translateY(-3px);
+  border-color: rgba(255, 255, 255, 0.28);
+  box-shadow: 0 16px 45px rgba(0, 0, 0, 0.45), 0 0 25px -5px rgba(109, 93, 252, 0.25);
 }
 
 .glass-strong {
-  background: var(--glass-strong);
+  background: linear-gradient(135deg, rgba(20, 20, 32, 0.88), rgba(10, 10, 18, 0.92));
+  border: 1px solid rgba(255, 255, 255, 0.18);
   backdrop-filter: blur(24px) saturate(140%);
   -webkit-backdrop-filter: blur(24px) saturate(140%);
-  border: 1px solid var(--glass-border);
   border-radius: var(--radius);
-  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.12);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.16);
+  position: relative;
+}
+
+.glass-strong::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 1px;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.3) 0%, rgba(255, 255, 255, 0.05) 35%, transparent 65%);
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
 }
 
 .num {
@@ -104,15 +168,15 @@ body {
   font-variant-numeric: tabular-nums;
 }
 
-/* Neo-brutalist accent button */
+/* Neo-brutalist accent button with high-contrast visible shadow on dark */
 .btn-brutal {
   background: #fde047;
   color: #0b0b12;
   font-weight: 800;
   border: 3px solid #0b0b12;
   border-radius: 12px;
-  box-shadow: 5px 5px 0 #0b0b12;
-  transition: transform .12s ease, box-shadow .12s ease;
+  box-shadow: 6px 6px 0 var(--aurora-3);
+  transition: transform 0.14s ease, box-shadow 0.14s ease;
   cursor: pointer;
   display: inline-flex;
   align-items: center;
@@ -121,11 +185,27 @@ body {
 
 .btn-brutal:hover {
   transform: translate(-2px, -2px);
-  box-shadow: 7px 7px 0 #0b0b12;
+  box-shadow: 8px 8px 0 var(--aurora-3);
 }
 
 .btn-brutal:active {
-  transform: translate(3px, 3px);
-  box-shadow: 2px 2px 0 #0b0b12;
+  transform: translate(2px, 2px);
+  box-shadow: 3px 3px 0 var(--aurora-3);
 }
 
+/* Border beam style top glow for hero KPI cards */
+.border-beam-card {
+  position: relative;
+}
+
+.border-beam-card::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 15%;
+  right: 15%;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--aurora-2), var(--aurora-1), transparent);
+  box-shadow: 0 0 16px 2px var(--aurora-2);
+  pointer-events: none;
+}

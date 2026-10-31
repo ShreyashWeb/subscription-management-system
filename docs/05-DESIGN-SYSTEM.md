@@ -12,9 +12,9 @@ Why this style: charts and KPI numbers glow on glass; bento layouts feel designe
 :root {
   /* surfaces */
   --bg: #07070d;
-  --glass: rgba(255, 255, 255, 0.06);
-  --glass-strong: rgba(255, 255, 255, 0.10);
-  --glass-border: rgba(255, 255, 255, 0.14);
+  --glass: rgba(255, 255, 255, 0.08);
+  --glass-strong: rgba(20, 20, 32, 0.88);
+  --glass-border: rgba(255, 255, 255, 0.16);
 
   /* aurora */
   --aurora-1: #6d5dfc;   /* violet */
@@ -39,43 +39,81 @@ Why this style: charts and KPI numbers glow on glass; bento layouts feel designe
   --accent: linear-gradient(135deg, var(--aurora-1), var(--aurora-2));
 }
 
-body {
-  background: var(--bg);
+html, body {
+  background-color: #07070d;
+  background-image:
+    radial-gradient(1200px 700px at 10% -10%, rgba(109, 93, 252, 0.40), transparent 60%),
+    radial-gradient(900px 600px at 95% 0%, rgba(34, 211, 238, 0.28), transparent 60%),
+    radial-gradient(1000px 700px at 50% 115%, rgba(244, 114, 182, 0.26), transparent 60%);
+  background-attachment: fixed;
+  background-repeat: no-repeat;
   color: var(--text);
-  font-family: "Geist", "Inter", system-ui, sans-serif;
+  font-family: var(--font-sans), "Geist", "Inter", system-ui, sans-serif;
+  min-height: 100vh;
 }
 
 .glass {
-  background: var(--glass);
-  border: 1px solid var(--glass-border);
-  backdrop-filter: blur(18px) saturate(140%);
-  -webkit-backdrop-filter: blur(18px) saturate(140%);
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.10) 0%, rgba(255, 255, 255, 0.03) 100%);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  backdrop-filter: blur(20px) saturate(160%);
+  -webkit-backdrop-filter: blur(20px) saturate(160%);
   border-radius: var(--radius);
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.12);
+  position: relative;
 }
-.glass-strong { background: var(--glass-strong); }   /* tables and forms */
+
+/* Subtle gradient border highlight on top-left edge */
+.glass::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 1px;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.35) 0%, rgba(255, 255, 255, 0.05) 30%, transparent 60%);
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
+}
+
+.glass-interactive:hover {
+  transform: translateY(-3px);
+  border-color: rgba(255, 255, 255, 0.28);
+  box-shadow: 0 16px 45px rgba(0, 0, 0, 0.45), 0 0 25px -5px rgba(109, 93, 252, 0.25);
+}
+
+.glass-strong {
+  background: linear-gradient(135deg, rgba(20, 20, 32, 0.88), rgba(10, 10, 18, 0.92));
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  backdrop-filter: blur(24px) saturate(140%);
+  -webkit-backdrop-filter: blur(24px) saturate(140%);
+  border-radius: var(--radius);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.16);
+}
 
 .num { font-family: "Space Grotesk", "Manrope", sans-serif; font-variant-numeric: tabular-nums; }
 
-/* The one neo-brutalist exception */
+/* The neo-brutalist exception (high contrast on dark) */
 .btn-brutal {
   background: #fde047;
   color: #0b0b12;
   font-weight: 800;
   border: 3px solid #0b0b12;
   border-radius: 12px;
-  box-shadow: 5px 5px 0 #0b0b12;
-  transition: transform .12s ease, box-shadow .12s ease;
+  box-shadow: 6px 6px 0 var(--aurora-3);
+  transition: transform .14s ease, box-shadow .14s ease;
 }
-.btn-brutal:hover  { transform: translate(-2px, -2px); box-shadow: 7px 7px 0 #0b0b12; }
-.btn-brutal:active { transform: translate(3px, 3px);  box-shadow: 2px 2px 0 #0b0b12; }
+.btn-brutal:hover  { transform: translate(-2px, -2px); box-shadow: 8px 8px 0 var(--aurora-3); }
+.btn-brutal:active { transform: translate(2px, 2px);  box-shadow: 3px 3px 0 var(--aurora-3); }
 ```
 
-> Note: `#fde047` and `#0b0b12` on the brutalist button are the only hard-coded colors allowed; move them into tokens (`--brutal-fill`, `--brutal-ink`) if you prefer zero exceptions.
+> Note: `#fde047` and `#0b0b12` on the brutalist button pair with `var(--aurora-3)` (`#f472b6`) for high-contrast offset shadows in dark mode.
 
 ## 2. Aurora background
 
-A fixed full-screen layer behind the app, three large blurred radial blobs (violet, cyan, pink) at 25–35 % opacity, drifting slowly with CSS keyframes or Motion (20–40 s loops). Add a faint noise texture (2–4 % opacity) to avoid banding. Pause or simplify the animation under `prefers-reduced-motion`.
+A two-layer system:
+1. **Static Fallback:** Multi-radial gradient on `html, body` guaranteeing immediate vibrant color.
+2. **Dynamic Drifting Layer (`AuroraBackground`):** Fixed, pointer-events-none layer behind all content with three large radial blobs (680–750px, blur 95–110px, opacity 0.48–0.58) in violet (`#6d5dfc`), cyan (`#22d3ee`), and pink (`#f472b6`) drifting slowly (24–32s loops, reverse, ease-in-out) using `transform` only. A faint SVG noise texture (3.5% opacity) prevents color banding. Under `prefers-reduced-motion`, transforms are disabled while keeping all colors.
 
 Ready-made options: Aceternity "Aurora Background" or "Background Beams", React Bits aurora/gradient backgrounds. Adapt colors to the tokens above.
 

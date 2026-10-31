@@ -3,6 +3,7 @@
 import React, { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { motion } from "motion/react";
 import {
   LayoutDashboard,
   Repeat,
@@ -71,7 +72,7 @@ export function Sidebar() {
   return (
     <aside
       className={cn(
-        "glass-strong sticky top-0 h-screen transition-all duration-300 flex flex-col justify-between z-30 m-3 rounded-[20px] border border-white/10 shrink-0",
+        "glass sticky top-3 h-[calc(100vh-24px)] transition-all duration-300 flex flex-col justify-between z-30 m-3 rounded-[22px] border border-white/16 shadow-[0_12px_45px_rgba(0,0,0,0.5)] shrink-0 overflow-hidden",
         collapsed ? "w-20" : "w-64"
       )}
     >
@@ -79,7 +80,7 @@ export function Sidebar() {
       <div className="p-4 border-b border-white/10 flex items-center justify-between">
         {!collapsed ? (
           <Link href="/dashboard" className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-xl bg-gradient-to-tr from-[#6d5dfc] to-[#22d3ee] flex items-center justify-center font-bold text-white shadow-lg shadow-[#6d5dfc]/30">
+            <div className="w-8 h-8 rounded-xl bg-gradient-to-tr from-[#6d5dfc] to-[#22d3ee] flex items-center justify-center font-bold text-white shadow-lg shadow-[#6d5dfc]/40 ring-1 ring-white/30">
               B
             </div>
             <div className="flex flex-col">
@@ -92,14 +93,14 @@ export function Sidebar() {
             </div>
           </Link>
         ) : (
-          <div className="w-8 h-8 mx-auto rounded-xl bg-gradient-to-tr from-[#6d5dfc] to-[#22d3ee] flex items-center justify-center font-bold text-white shadow-md">
+          <div className="w-8 h-8 mx-auto rounded-xl bg-gradient-to-tr from-[#6d5dfc] to-[#22d3ee] flex items-center justify-center font-bold text-white shadow-md ring-1 ring-white/30">
             B
           </div>
         )}
 
         <button
           onClick={() => setCollapsed(!collapsed)}
-          className="p-1.5 rounded-lg text-zinc-400 hover:text-white hover:bg-white/5 transition-colors"
+          className="p-1.5 rounded-lg text-zinc-400 hover:text-white hover:bg-white/10 transition-colors"
           title={collapsed ? "Expand sidebar" : "Collapse sidebar"}
         >
           {collapsed ? (
@@ -111,11 +112,11 @@ export function Sidebar() {
       </div>
 
       {/* Navigation Sections */}
-      <div className="flex-1 overflow-y-auto px-3 py-4 space-y-6 scrollbar-thin">
+      <div className="flex-1 overflow-y-auto px-3 py-4 space-y-6">
         {navSections.map((section, idx) => (
           <div key={idx} className="space-y-1">
             {!collapsed && (
-              <p className="px-3 text-[11px] font-semibold text-zinc-500 uppercase tracking-wider mb-2">
+              <p className="px-3 text-[11px] font-semibold text-zinc-400 uppercase tracking-wider mb-2">
                 {section.title}
               </p>
             )}
@@ -127,24 +128,35 @@ export function Sidebar() {
                   key={item.href}
                   href={item.href}
                   className={cn(
-                    "flex items-center gap-3 px-3 py-2 rounded-xl text-sm font-medium transition-all group",
-                    isActive
-                      ? "bg-gradient-to-r from-[#6d5dfc]/25 to-[#22d3ee]/15 text-white border border-[#6d5dfc]/30 shadow-sm"
-                      : "text-zinc-400 hover:text-white hover:bg-white/5"
+                    "relative flex items-center gap-3 px-3 py-2 rounded-xl text-sm font-medium transition-colors group",
+                    isActive ? "text-white" : "text-zinc-400 hover:text-white"
                   )}
                   title={collapsed ? item.name : undefined}
                 >
+                  {/* Shared animated layout indicator */}
+                  {isActive && (
+                    <motion.span
+                      layoutId="sidebar-active-pill"
+                      className="absolute inset-0 rounded-xl bg-gradient-to-r from-[#6d5dfc]/30 to-[#22d3ee]/20 border border-[#6d5dfc]/40 shadow-[0_0_20px_rgba(109,93,252,0.25)] z-0"
+                      transition={{ type: "spring", stiffness: 350, damping: 28 }}
+                    />
+                  )}
+
                   <Icon
                     className={cn(
-                      "w-4 h-4 transition-transform group-hover:scale-110 shrink-0",
-                      isActive ? "text-[#22d3ee]" : "text-zinc-400 group-hover:text-white"
+                      "w-4 h-4 transition-transform group-hover:scale-110 shrink-0 relative z-10",
+                      isActive
+                        ? "text-[#22d3ee] drop-shadow-[0_0_6px_rgba(34,211,238,0.7)]"
+                        : "text-zinc-400 group-hover:text-white"
                     )}
                   />
                   {!collapsed && (
-                    <span className="truncate flex-1">{item.name}</span>
+                    <span className="truncate flex-1 relative z-10">
+                      {item.name}
+                    </span>
                   )}
                   {!collapsed && item.adminOnly && (
-                    <ShieldCheck className="w-3.5 h-3.5 text-zinc-500 shrink-0" />
+                    <ShieldCheck className="w-3.5 h-3.5 text-zinc-500 shrink-0 relative z-10" />
                   )}
                 </Link>
               );
@@ -157,11 +169,11 @@ export function Sidebar() {
       <div className="p-3 border-t border-white/10">
         <div
           className={cn(
-            "flex items-center gap-3 p-2 rounded-xl bg-white/[0.03] border border-white/5",
+            "flex items-center gap-3 p-2 rounded-xl bg-white/[0.04] border border-white/10",
             collapsed ? "justify-center" : ""
           )}
         >
-          <div className="w-8 h-8 rounded-full bg-gradient-to-br from-indigo-500 to-purple-700 flex items-center justify-center text-xs font-semibold text-white shrink-0">
+          <div className="w-8 h-8 rounded-full bg-gradient-to-br from-[#6d5dfc] to-[#f472b6] flex items-center justify-center text-xs font-semibold text-white shadow-md shrink-0">
             AD
           </div>
           {!collapsed && (
@@ -179,4 +191,3 @@ export function Sidebar() {
     </aside>
   );
 }
-

@@ -28,7 +28,7 @@ export default function RootLayout({
       lang="en"
       className={`${geistSans.variable} ${spaceGrotesk.variable} dark antialiased`}
     >
-      <body className="min-h-screen bg-[#07070d] text-[#f5f5fa] font-sans selection:bg-[#6d5dfc]/30 selection:text-white">
+      <body className="min-h-screen text-[#f5f5fa] font-sans selection:bg-[#6d5dfc]/30 selection:text-white">
         {children}
         <Toaster position="bottom-right" theme="dark" richColors />
       </body>
