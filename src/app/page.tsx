@@ -96,7 +96,7 @@ export default function HomePage() {
               Enterprise Billing Architecture
             </h2>
             <span className="text-xs text-zinc-400 font-mono">
-              PostgreSQL &bull; Prisma &bull; Next.js 16
+              Enterprise Core &bull; High Concurrency &bull; Sub-2s SLA
             </span>
           </div>
 

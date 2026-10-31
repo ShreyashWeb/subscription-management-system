@@ -230,3 +230,17 @@ h1, h2, h3, h4, h5, h6 {
     animation: none !important;
   }
 }
+
+
+/* Hide Next.js dev indicators and badges from screen */
+nextjs-portal,
+[data-nextjs-toast],
+[data-nextjs-dev-overlay-root],
+[data-next-badge],
+#next-logo,
+.nextjs-toast-errors-parent {
+  display: none !important;
+  visibility: hidden !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+}

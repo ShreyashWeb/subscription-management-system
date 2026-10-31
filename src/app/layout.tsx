@@ -30,6 +30,11 @@ const manrope = Manrope({
 export const metadata: Metadata = {
   title: "Brightloop Billing | Subscription Management",
   description: "One platform for plans, subscriptions, invoices, payments and revenue reporting.",
+  icons: {
+    icon: "/icon.svg",
+    shortcut: "/icon.svg",
+    apple: "/icon.svg",
+  },
 };
 
 export default function RootLayout({
