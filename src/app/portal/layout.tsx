@@ -3,8 +3,9 @@ import Link from "next/link";
 import { AuroraBackground } from "@/components/glass/aurora-background";
 import { auth, signOut } from "@/lib/auth";
 import { redirect } from "next/navigation";
-import { User, LogOut, ShieldCheck, Sparkles } from "lucide-react";
+import { LogOut } from "lucide-react";
 import { StatusPill } from "@/components/glass/status-pill";
+import { PortalNav } from "@/components/portal/portal-nav";
 
 export default async function PortalLayout({
   children,
@@ -20,8 +21,8 @@ export default async function PortalLayout({
     <AuroraBackground>
       <div className="min-h-screen flex flex-col relative z-10">
         {/* Portal Header */}
-        <header className="glass sticky top-3 z-20 mx-4 mb-8 px-5 py-3 rounded-[16px] border border-white/10 flex items-center justify-between">
-          <div className="flex items-center gap-3">
+        <header className="glass sticky top-3 z-20 mx-4 mb-8 px-5 py-3 rounded-[16px] border border-white/10 flex flex-col md:flex-row items-center justify-between gap-4">
+          <div className="flex items-center gap-3 w-full md:w-auto justify-between md:justify-start">
             <Link href="/portal" className="flex items-center gap-2">
               <span className="w-8 h-8 rounded-xl bg-gradient-to-tr from-[#6d5dfc] to-[#22d3ee] flex items-center justify-center text-white font-bold text-sm shadow-md shadow-[#6d5dfc]/30">
                 B
@@ -33,7 +34,12 @@ export default async function PortalLayout({
             <StatusPill status="ACTIVE" label="Customer Portal" size="sm" />
           </div>
 
-          <div className="flex items-center gap-4">
+          {/* Navigation Links */}
+          <div className="order-last md:order-none w-full md:w-auto flex justify-center">
+            <PortalNav />
+          </div>
+
+          <div className="flex items-center gap-4 w-full md:w-auto justify-between md:justify-end">
             <div className="flex items-center gap-2 text-xs text-zinc-300">
               <div className="w-7 h-7 rounded-full bg-white/10 border border-white/15 flex items-center justify-center text-white font-medium">
                 {session.user.name?.[0]?.toUpperCase() || "C"}
@@ -70,4 +76,3 @@ export default async function PortalLayout({
     </AuroraBackground>
   );
 }
-

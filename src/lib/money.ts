@@ -62,6 +62,8 @@ export function formatMoney(
   }
 }
 
+export const formatCurrency = formatMoney;
+
 /**
  * Calculates profit margin between sales price and cost price.
  * User requirement 7: Guard margin % against salesPrice = 0.
