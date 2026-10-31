@@ -34,6 +34,10 @@ yarn-error.log*
 .env*
 !.env.example
 
+# agent files (local only)
+.agents/
+AGENTS.md
+
 # vercel
 .vercel
 
